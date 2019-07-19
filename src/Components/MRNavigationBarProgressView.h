@@ -27,6 +27,21 @@
 @property (nonatomic, assign) float progress;
 
 /**
+ Duration of animation for completion, Default 0.3
+ */
+@property(nonatomic, assign) CGFloat fCompletionAnimationDelay;
+
+/**
+ Toggle reset to 0 progress when complete
+ */
+@property(nonatomic, assign) BOOL resetOnCompletion;
+
+/**
+ Toggle alpha update on progress change, Default YES
+ */
+@property(nonatomic, assign) BOOL autoUpdateAlphaWithProgressChange;
+
+/**
  Change progress animated.
  
  If you set a lower value than the current progess then the animation bounces.

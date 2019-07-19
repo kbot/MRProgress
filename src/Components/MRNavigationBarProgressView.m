@@ -119,7 +119,9 @@ static NSNumberFormatter *progressNumberFormatter;
     self.progressView = progressView;
     
     self.progress = 0;
-    
+    self.fCompletionAnimationDelay = 0.3f;
+    self.autoUpdateAlphaWithProgressChange = YES;
+
     [self tintColorDidChange];
 }
 
@@ -215,7 +217,9 @@ static NSNumberFormatter *progressNumberFormatter;
 }
 
 - (void)progressDidChange {
-    self.progressView.alpha = self.progress >= 1 ? 0 : 1;
+    if (self.autoUpdateAlphaWithProgressChange) {
+        self.progressView.alpha = self.progress >= 1 ? 0 : 1;
+    }
     [self layoutProgressView];
     
     self.accessibilityValue = [progressNumberFormatter stringFromNumber:@(self.progress)];
@@ -230,9 +234,13 @@ static NSNumberFormatter *progressNumberFormatter;
         }
         
         void(^completion)(BOOL) = ^(BOOL finished){
-            [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            [UIView animateWithDuration:0.3 delay:self.fCompletionAnimationDelay options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.progressView.alpha = self.progress >= 1 ? 0 : 1;
-            } completion:nil];
+            } completion:^(BOOL finished) {
+                if (self.resetOnCompletion && self.progress >= 1) {
+                    self.progress = 0;
+                }
+            }];
         };
         
         if (progress > self.progress || self.progress >= 1) {
